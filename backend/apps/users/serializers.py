@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
+from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from .models import AccountEmailAddress
@@ -94,3 +95,29 @@ class RegisterConfirmSerializer(serializers.Serializer):
 
         cache.delete(f"registration_{email}")
         return {"message": "Email verified successfully."}
+
+
+class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        email = data.get("email")
+        password = data.get("password")
+
+        if not email or not password:
+            raise serializers.ValidationError("Email and password are required.")
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("User not found.")
+
+        if not user.check_password(password):
+            raise serializers.ValidationError("Invalid email or password.")
+        data["user"] = user
+        return data
+
+    def create(self, validated_data):
+        user = validated_data["user"]
+        token = RefreshToken.for_user(user)
+        return {"access": str(token.access_token), "refresh": str(token)}
