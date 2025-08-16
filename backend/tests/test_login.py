@@ -1,10 +1,7 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
-from django.core.cache import cache
 from django.urls import reverse
 from django.contrib.auth.models import User
-from unittest.mock import patch
-from apps.users.models import AccountEmailAddress
 
 
 class LoginTests(APITestCase):
