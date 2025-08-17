@@ -1,0 +1,21 @@
+[run]
+source = apps
+
+omit =
+    */migrations/*
+    */__init__.py
+    */admin.py
+    */apps.py
+    */wsgi.py
+    */asgi.py
+    */settings/*
+    manage.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __str__
+    def __repr__
+    if self\.debug:
+    if settings\.DEBUG
+    if __name__ == .__main__.:
