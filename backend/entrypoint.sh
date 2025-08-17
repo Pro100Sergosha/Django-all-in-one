@@ -9,4 +9,10 @@ echo "Collect static files"
 python3 manage.py collectstatic --noinput
 
 echo "Starting Django server with Uvicorn..."
-exec uvicorn config.asgi:application --host 0.0.0.0 --port 8000
+exec gunicorn config.asgi:application \
+  -k uvicorn.workers.UvicornWorker \
+  --bind 0.0.0.0:8000 \
+  --workers 4 \
+  --threads 4 \
+  --worker-connections 1000
+
